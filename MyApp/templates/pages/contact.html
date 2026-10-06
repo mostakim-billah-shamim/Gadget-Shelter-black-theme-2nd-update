@@ -1,0 +1,226 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+Contact Us
+{% endblock title %}
+
+{% block body %}
+
+<!-- Header Section -->
+<!-- Header Section -->
+<!-- Header Section -->
+<div class="container-fluid page-header py-4 mb-4"
+    style="background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;">
+    <h1 class="text-center text-white display-6 fw-bold mb-2">Contact Us</h1>
+    <ol class="breadcrumb justify-content-center mb-0">
+        <li class="breadcrumb-item"><a href="/" class="text-white opacity-75 text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item active text-white fw-semibold">Contact</li>
+    </ol>
+</div>
+
+<!-- Main Tech Background Section -->
+<div class="container-fluid contact-section-bg py-4 position-relative">
+    <!-- Glowing Grid Particles Canvas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="container my-2 position-relative" style="z-index: 2;">
+
+        <!-- Form Glass Container -->
+        <div class="p-3 p-md-4 contact-glass-card shadow-lg">
+            <div class="row g-4">
+
+                <!-- Section Title -->
+                <div class="col-12 text-center mb-1">
+                    <span class="contact-gradient-badge text-uppercase fw-semibold fs-7">Get In Touch</span>
+                    <h2 class="fs-4 text-white fw-bold mb-0 mt-1">We Are Here To Help You</h2>
+                </div>
+
+                <!-- Form Area -->
+                <div class="col-lg-7">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 p-2 mb-3" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" class="contact-page-form">
+                        {% csrf_token %}
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.name }}
+                                    <label for="{{ form.name.id_for_label }}">Your Name *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.email }}
+                                    <label for="{{ form.email.id_for_label }}">Your Email *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.phone }}
+                                    <label for="{{ form.phone.id_for_label }}">Phone Number *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.inquiry_type }}
+                                    <label for="{{ form.inquiry_type.id_for_label }}">Inquiry Type</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.order_number }}
+                                    <label for="{{ form.order_number.id_for_label }}">Order ID (Optional)</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.subject }}
+                                    <label for="{{ form.subject.id_for_label }}">Subject *</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea name="{{ form.message.name }}" id="{{ form.message.id_for_label }}" class="form-control" style="height: 100px;" placeholder="Message" required></textarea>
+                                    <label for="{{ form.message.id_for_label }}">Message *</label>
+                                </div>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn contact-gradient-btn w-100 py-2 fs-6 fw-bold">
+                                    Send Message <i class="fas fa-paper-plane ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Map Area -->
+                <div class="col-lg-5">
+                    <div class="h-100 contact-map-wrapper overflow-hidden rounded-4 border border-secondary border-opacity-25" style="min-height: 280px;">
+                        <iframe class="w-100 h-100 border-0 dark-map-filter"
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14705.819597650274!2d90.48084727812387!3d23.68681494632453!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sbd!4v1787408864496!5m2!1sen!2sbd"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+
+                <!-- Info Cards -->
+<div class="col-12 mt-3">
+    <div class="row g-2 g-md-3 text-center">
+
+        <div class="col-6 col-lg-3">
+            <div class="contact-info-card p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="contact-icon-box mb-2">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h6 class="fw-bold text-white mb-1 card-title-text">Location</h6>
+                <p class="text-white-50 mb-0 card-sub-text text-truncate w-100">Dhaka, Bangladesh</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="contact-info-card p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="contact-icon-box mb-2">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h6 class="fw-bold text-white mb-1 card-title-text">Email Us</h6>
+                <p class="text-white-50 mb-0 card-sub-text text-truncate w-100" title="info@example.com">support@gadgetshelter.com</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="contact-info-card p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                <div class="contact-icon-box mb-2">
+                    <i class="fa fa-phone-alt"></i>
+                </div>
+                <h6 class="fw-bold text-white mb-1 card-title-text">Call Us</h6>
+                <p class="text-white-50 mb-0 card-sub-text text-truncate w-100">+880 1410-172629</p>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <a href="https://www.facebook.com/GadgetsShelter" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                <div class="contact-info-card p-3 h-100 d-flex flex-column align-items-center justify-content-center">
+                    <div class="contact-icon-box mb-2">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <h6 class="fw-bold text-white mb-1 card-title-text">Facebook</h6>
+                    <p class="text-white-50 mb-0 card-sub-text text-truncate w-100">Gadget Shelter</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tech Particles Canvas Script -->
+<script>
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = canvas.parentElement.offsetWidth;
+        canvas.height = canvas.parentElement.offsetHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = (Math.random() - 0.5) * 0.8;
+            this.speedY = (Math.random() - 0.5) * 0.8;
+            this.color = Math.random() > 0.5 ? 'rgba(255, 102, 0, 0.4)' : 'rgba(37, 99, 235, 0.3)';
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width) this.x = 0;
+            if (this.x < 0) this.x = canvas.width;
+            if (this.y > canvas.height) this.y = 0;
+            if (this.y < 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function init() {
+        particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+</script>
+
+{% endblock body %}

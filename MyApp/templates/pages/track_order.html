@@ -1,0 +1,363 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Order Tracking & Management | Gadget Shelter{% endblock %}
+
+{% block extra_css %}
+<!-- External CSS File Link -->
+<link rel="stylesheet" href="{% static 'css/order_tracker.css' %}">
+{% endblock %}
+
+{% block body %}
+
+
+        <!-- Header Section -->
+
+    <div class="container py-3 py-md-5">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-4 mb-md-5">
+        <!-- Title -->
+        <h3 class="fw-bold mb-2 text-white fs-4 fs-md-3">
+            <i class="fas fa-boxes text-warning me-2"></i>Order Management & Tracking
+        </h3>
+        
+        <!-- Subtitle -->
+        <p class="text-white-50 small mb-3">Track and manage your order statuses seamlessly</p>
+
+        <!-- Support Contact Pill / Badge -->
+        <div class="d-inline-flex align-items-center justify-content-center">
+            <a href="tel:01410172629" class="support-pill text-decoration-none px-3 py-1.5 rounded-pill d-inline-flex align-items-center gap-2">
+                <i class="fas fa-headset text-warning small"></i>
+                <span class="text-white-50 small">Customer Support:</span>
+                <strong class="text-white small tracking-wide">01410-172629</strong>
+            </a>
+        </div>
+    </div>
+
+
+
+
+    <!-- ADMIN DASHBOARD SUMMARY -->
+    {% if request.user.is_staff or request.user.is_superuser %}
+    <div class="row g-2 g-md-3 mb-4 mb-md-5">
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-primary-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Total</small>
+                <h4 class="fw-bold text-primary mb-0 fs-6 fs-md-4">{{ admin_summary.total }}</h4>
+            </div>
+        </div>
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-warning-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Pending</small>
+                <h4 class="fw-bold text-warning mb-0 fs-6 fs-md-4">{{ admin_summary.pending }}</h4>
+            </div>
+        </div>
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-info-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Processing</small>
+                <h4 class="fw-bold text-info mb-0 fs-6 fs-md-4">{{ admin_summary.processing }}</h4>
+            </div>
+        </div>
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-purple-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Shipped</small>
+                <h4 class="fw-bold text-primary mb-0 fs-6 fs-md-4">{{ admin_summary.shipped }}</h4>
+            </div>
+        </div>
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-success-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Delivered</small>
+                <h4 class="fw-bold text-success mb-0 fs-6 fs-md-4">{{ admin_summary.delivered }}</h4>
+            </div>
+        </div>
+        <div class="col-4 col-md-2">
+            <div class="card glass-card border-danger-30 text-center p-2 p-md-3">
+                <small class="text-white-50 fw-bold d-block mb-1 card-label text-nowrap">Cancelled</small>
+                <h4 class="fw-bold text-danger mb-0 fs-6 fs-md-4">{{ admin_summary.cancelled }}</h4>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    
+
+    <!-- Quick Search Form -->
+    <div class="row justify-content-center mb-4 mb-md-5">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card glass-card border-white-10 p-3 p-md-4">
+                <h6 class="fw-bold text-white-50 mb-3"><i class="fas fa-search me-2 text-warning"></i>Quick Order Search</h6>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <input type="text" name="order_id" class="form-control form-input-dark py-2 text-white border-0" placeholder="Order ID (e.g. ORD-8A3F2B)" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" name="phone" class="form-control form-input-dark py-2 text-white border-0" placeholder="Phone Number (Optional for Admin)">
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 rounded-pill text-dark fw-bold py-2 shadow-sm">
+                        <i class="fas fa-search me-2"></i>Track Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- TOP DISPLAY / TRACK DETAILS SECTION -->
+    {% if searched or searched_order %}
+        <div class="row justify-content-center mb-4 mb-md-5" id="order-details-card">
+            <div class="col-12 col-md-10 col-lg-8">
+                {% if searched_order %}
+                    <div class="card glass-card border-white-12 p-3 p-md-4">
+                        
+                        <!-- Order Header & Dynamic Status Badge -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h6 class="fw-bold text-white mb-0 text-nowrap">Order ID: <span class="text-warning">{{ searched_order.order_id }}</span></h6>
+                            
+                            {% if searched_order.status == 'Pending' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-pending text-nowrap">Pending Verification</span>
+                            {% elif searched_order.status == 'Confirmed' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-confirmed text-nowrap">Confirmed</span>
+                            {% elif searched_order.status == 'Processing' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-processing text-nowrap">Processing</span>
+                            {% elif searched_order.status == 'Shipped' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-shipped text-nowrap">Shipped</span>
+                            {% elif searched_order.status == 'Delivered' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-delivered text-nowrap">Delivered</span>
+                            {% elif searched_order.status == 'Cancelled' %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-cancelled text-nowrap">Cancelled</span>
+                            {% else %}
+                                <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-default text-nowrap">{{ searched_order.status }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Display Cancel Reason if Cancelled -->
+                        {% if searched_order.status == 'Cancelled' and searched_order.cancel_reason %}
+                            <div class="alert cancel-alert py-2 px-3 rounded-3 small mb-3">
+                                <strong><i class="fas fa-info-circle me-1"></i> Cancellation Reason:</strong> {{ searched_order.cancel_reason }}
+                            </div>
+                        {% endif %}
+
+                        <!-- Progress Step Tracker (6 Steps: 3 per row on small screens, 6 in a row on md+) -->
+                        <div class="row g-3 justify-content-center my-4 text-center">
+                            
+                            <!-- 1. Pending -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Pending' or searched_order.status == 'Confirmed' or searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}step-pending{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-clock fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Pending' or searched_order.status == 'Confirmed' or searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}text-warning{% else %}text-white-50{% endif %}" style="font-size: 11px;">Pending</small>
+                            </div>
+
+                            <!-- 2. Confirmed -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Confirmed' or searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}step-confirmed{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-check-circle fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Confirmed' or searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}text-primary{% else %}text-white-50{% endif %}" style="font-size: 11px;">Confirmed</small>
+                            </div>
+
+                            <!-- 3. Processing -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}step-processing{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-cogs fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Processing' or searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}text-info{% else %}text-white-50{% endif %}" style="font-size: 11px;">Processing</small>
+                            </div>
+
+                            <!-- 4. Shipped -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}step-shipped{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-shipping-fast fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Shipped' or searched_order.status == 'Delivered' %}text-purple{% else %}text-white-50{% endif %}" style="font-size: 11px;">Shipped</small>
+                            </div>
+
+                            <!-- 5. Delivered -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Delivered' %}step-delivered{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-home fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Delivered' %}text-success{% else %}text-white-50{% endif %}" style="font-size: 11px;">Delivered</small>
+                            </div>
+
+                            <!-- 6. Cancelled -->
+                            <div class="col-4 col-md-2">
+                                <div class="badge rounded-circle step-circle mb-2 {% if searched_order.status == 'Cancelled' %}step-cancelled{% else %}step-inactive{% endif %}">
+                                    <i class="fas fa-times-circle fs-5"></i>
+                                </div>
+                                <small class="d-block fw-semibold {% if searched_order.status == 'Cancelled' %}text-danger{% else %}text-white-50{% endif %}" style="font-size: 11px;">Cancelled</small>
+                            </div>
+
+                        </div>
+
+                        <!-- Customer Details -->
+                        <div class="p-2 p-md-3 rounded-3 mt-3 customer-box">
+                            <div class="row g-2 small text-white-50">
+                                <div class="col-12 col-md-6"><strong class="text-white">Customer:</strong> <span class="text-white-90">{{ searched_order.full_name }}</span></div>
+                                <div class="col-12 col-md-6 text-md-end"><strong class="text-white">Phone:</strong> <span class="text-white-90">{{ searched_order.phone }}</span></div>
+                                <div class="col-12"><strong class="text-white">Address:</strong> <span class="text-white-90">{{ searched_order.address }}, {{ searched_order.city }}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert not-found-alert text-center rounded-4 p-4 shadow-sm">
+                        <i class="fas fa-exclamation-triangle fs-3 mb-2 d-block text-warning"></i>
+                        Order not found! Please check your Order ID and try again.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+
+
+    <!-- ADMIN TABLE VIEW -->
+    {% if request.user.is_staff or request.user.is_superuser %}
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card glass-card border-white-10 overflow-hidden">
+                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 px-3 px-md-4">
+                        <h5 class="fw-bold mb-0 text-white fs-6 fs-md-5"><i class="fas fa-list-alt me-2 text-warning"></i>All Customer Orders System</h5>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-dark custom-dark-striped table-hover align-middle mb-0 text-center bg-transparent">
+                            <thead class="text-white-50 small text-uppercase table-head-bg">
+                                <tr>
+                                    <th class="py-3 ps-3 ps-md-4 text-start text-nowrap">Order ID & Date</th>
+                                    <th class="py-3 text-start text-nowrap">Customer Details</th>
+                                    <th class="py-3 text-nowrap">Amount & Due</th>
+                                    <th class="py-3 table-status-col text-nowrap">Status</th>
+                                    <th class="py-3 pe-3 pe-md-4 text-nowrap">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top border-secondary border-opacity-25">
+                                {% for order in orders %}
+                                <tr class="clickable-row" onclick="window.location.href='?order_id={{ order.order_id }}&phone={{ order.phone }}';">
+                                    <td class="ps-3 ps-md-4 py-3 text-start">
+                                        <div class="fw-bold text-warning fs-6 text-nowrap">{{ order.order_id }}</div>
+                                        <small class="text-white-50 text-nowrap d-block"><i class="far fa-calendar-alt me-1"></i>{{ order.created_at|date:"d M Y, h:i A" }}</small>
+                                    </td>
+
+                                    <td class="py-3 text-start">
+                                        <div class="fw-bold text-white text-nowrap">{{ order.full_name }}</div>
+                                        <small class="text-white-50 d-block text-nowrap"><i class="fas fa-phone me-1"></i>{{ order.phone }}</small>
+                                        <small class="text-white-50 text-nowrap"><i class="fas fa-map-marker-alt me-1"></i>{{ order.city }}</small>
+                                    </td>
+
+                                    <td class="py-3">
+                                        <div class="fw-bold text-white text-nowrap">Tk. {{ order.grand_total }}</div>
+                                        <small class="fw-semibold text-due text-nowrap">Due: Tk. {{ order.due_amount }}</small>
+                                    </td>
+
+                                    <!-- DYNAMIC STATUS DROPDOWN -->
+                                    <td class="py-3" onclick="event.stopPropagation();">
+                                        <form method="POST" class="d-inline-block w-100">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="update_status" value="1">
+                                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                            
+                                            <select name="status" onchange="this.form.submit()" 
+                                                class="form-select form-select-sm rounded-pill fw-semibold text-center px-2 py-1 select-status-{{ order.status|lower }}">
+                                                <option value="Pending" class="bg-dark text-white" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                                <option value="Confirmed" class="bg-dark text-white" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="Processing" class="bg-dark text-white" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                                <option value="Shipped" class="bg-dark text-white" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="Delivered" class="bg-dark text-white" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="Cancelled" class="bg-dark text-white" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </form>
+
+                                        {% if order.status == 'Cancelled' and order.cancel_reason %}
+                                            <small class="d-block fw-semibold mt-1 cancel-reason-text text-nowrap">
+                                                Reason: {{ order.cancel_reason }}
+                                            </small>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="pe-3 pe-md-4 py-3" onclick="event.stopPropagation();">
+                                        <a href="?order_id={{ order.order_id }}&phone={{ order.phone }}" class="btn btn-sm rounded-pill px-3 btn-track text-nowrap">
+                                            <i class="fas fa-eye me-1"></i>Track
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="py-4 text-center text-white-50">No orders found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- NORMAL USER ORDER LIST VIEW -->
+    {% elif request.user.is_authenticated %}
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10">
+                <h5 class="fw-bold mb-3 text-white fs-6 fs-md-5"><i class="fas fa-history me-2 text-warning"></i>Your Order History ({{ orders.count }})</h5>
+
+                {% if orders %}
+                    {% for order in orders %}
+                        <div class="card glass-card border-white-10 p-3 p-md-4 mb-3 clickable-row" onclick="window.location.href='?order_id={{ order.order_id }}&phone={{ order.phone }}';">
+                            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                                <div>
+                                    <h6 class="fw-bold text-white mb-0 text-nowrap">Order ID: <span class="text-warning">{{ order.order_id }}</span></h6>
+                                    <small class="text-white-50 text-nowrap d-block"><i class="far fa-calendar-alt me-1"></i>{{ order.created_at|date:"d M Y, h:i A" }}</small>
+                                </div>
+                                <div class="text-end">
+                                    {% if order.status == 'Pending' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-pending text-nowrap">Pending Verification</span>
+                                    {% elif order.status == 'Confirmed' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-confirmed text-nowrap">Confirmed</span>
+                                    {% elif order.status == 'Processing' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-processing text-nowrap">Processing</span>
+                                    {% elif order.status == 'Shipped' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-shipped text-nowrap">Shipped</span>
+                                    {% elif order.status == 'Delivered' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-delivered text-nowrap">Delivered</span>
+                                    {% elif order.status == 'Cancelled' %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-cancelled text-nowrap">Cancelled</span>
+                                    {% else %}
+                                        <span class="badge rounded-pill px-2 py-1 px-md-3 py-md-2 fw-semibold badge-default text-nowrap">{{ order.status }}</span>
+                                    {% endif %}
+                                    
+                                    {% if order.status == 'Cancelled' and order.cancel_reason %}
+                                        <small class="d-block fw-semibold mt-1 cancel-reason-text text-nowrap">
+                                            Reason: {{ order.cancel_reason }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="p-2 p-md-3 rounded-3 mt-2 customer-box">
+                                <div class="row g-1 g-md-2 small text-white-50">
+                                    <div class="col-12 col-sm-6 text-nowrap"><strong class="text-white">Customer:</strong> {{ order.full_name }}</div>
+                                    <div class="col-12 col-sm-6 text-sm-end text-nowrap"><strong class="text-white">Phone:</strong> {{ order.phone }}</div>
+                                    <div class="col-6 text-nowrap"><strong class="text-white">Total Amount:</strong> Tk. {{ order.grand_total }}</div>
+                                    <div class="col-6 text-end text-nowrap"><strong class="text-white">Due:</strong> <span class="fw-semibold text-due">Tk. {{ order.due_amount }}</span></div>
+                                    <div class="col-12 mt-1 text-truncate"><strong class="text-white">Address:</strong> {{ order.address }}, {{ order.city }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-5 rounded-4 empty-orders-box">
+                        <i class="fas fa-box-open fs-1 text-white-50 mb-3"></i>
+                        <p class="text-white-50 mb-0">You haven't placed any orders yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

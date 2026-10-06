@@ -1,0 +1,134 @@
+{% extends 'base/base.html' %}
+{% block title %}Checkout | Gadget Shelter {% endblock %}
+
+{% block body %}
+<div class="container py-2">
+    
+    <!-- Iconic Page Header (Compact) -->
+    <div class="text-center mb-3 pt-2">
+        <div class="d-inline-flex align-items-center justify-content-center p-2 rounded-circle mb-2 shadow-sm" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
+            <i class="fas fa-cash-register text-warning fs-4"></i>
+        </div>
+        <h3 class="fw-bold text-white tracking-wide mb-1">Checkout Process</h3>
+        <p class="text-white-50 small mb-0">Complete your shipping details and advance payment to place the order.</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-4">
+            
+            <!-- Delivery & Customer Details -->
+            <div class="col-lg-7">
+                
+                <!-- Shipping Information Card -->
+                <div class="card border-0 shadow-lg rounded-4 mb-4" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4 text-white d-flex align-items-center">
+                            <i class="fas fa-truck text-warning me-2"></i>Shipping Information
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-white-50">Full Name *</label>
+                                <input type="text" name="full_name" class="form-control rounded-3 text-white border-0" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="Enter full name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-white-50">Phone Number *</label>
+                                <input type="tel" name="phone" class="form-control rounded-3 text-white border-0" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="017XXXXXXXX" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-white-50">City / District *</label>
+                                <input type="text" name="city" class="form-control rounded-3 text-white border-0" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="e.g. Dhaka" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-white-50">Full Delivery Address *</label>
+                                <textarea name="address" class="form-control rounded-3 text-white border-0" rows="3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="House/Road no, Area details" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advance Payment (bKash Guidelines) -->
+                <div class="card border-0 shadow-lg rounded-4" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1) !important; border-left: 4px solid #f59e0b !important;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-white mb-3 d-flex align-items-center">
+                            <i class="fas fa-wallet text-warning me-2"></i>Advance Payment (Delivery Charge)
+                        </h5>
+                        
+                        <div class="alert rounded-3 small border-0 text-warning mb-3" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.25) !important;">
+                            অর্ডারটি নিশ্চিত করতে ডেলিভারি চার্জ <strong class="text-white">Tk. {{ delivery_charge }}</strong> টাকা নিচে দেওয়া বিকাশ নম্বরে <strong class="text-white">Send Money</strong> করুন।
+                        </div>
+
+                        <div class="p-3 rounded-3 mb-3 d-flex align-items-center justify-content-between" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div>
+                                <small class="text-white-50 d-block">bKash Personal Number</small>
+                                <strong class="fs-5 text-warning tracking-wide">01410-172629</strong>
+                            </div>
+                            <span class="badge bg-danger px-3 py-2 rounded-pill fw-semibold shadow-sm">bKash Send Money</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-white-50">Your bKash Number *</label>
+                                <input type="text" name="sender_bkash_no" class="form-control rounded-3 text-white border-0" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="01XXXXXXXXX" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-white-50">bKash TrxID *</label>
+                                <input type="text" name="trx_id" class="form-control rounded-3 text-white border-0" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15) !important;" placeholder="e.g. B8X2K9L0" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+                    
+                    <div class="card-header border-bottom border-secondary border-opacity-25 py-3 px-4" style="background: rgba(255, 255, 255, 0.03);">
+                        <h5 class="fw-bold mb-0 text-white"><i class="fas fa-receipt text-warning me-2"></i>Order Summary</h5>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <ul class="list-group list-group-flush mb-3">
+                            {% for item in cart_items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-warning text-dark me-2 rounded-pill fw-bold">{{ item.quantity }}x</span>
+                                    <span class="small fw-semibold text-white-50">{{ item.product.title }}</span>
+                                </div>
+                                <span class="small fw-bold text-white">Tk. {{ item.subtotal }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <hr class="border-secondary border-opacity-25">
+                        
+                        <div class="d-flex justify-content-between mb-2"><span class="text-white-50">Subtotal</span><span class="text-white">Tk. {{ total_price }}</span></div>
+                        {% if coupon_discount > 0 %}
+                        <div class="d-flex justify-content-between mb-2 text-success"><span>Discount</span><span>- Tk. {{ coupon_discount }}</span></div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between mb-2"><span class="text-white-50">Delivery Charge (Advance)</span><span class="text-warning fw-bold">Tk. {{ delivery_charge }}</span></div>
+                        
+                        <hr class="border-secondary border-opacity-25">
+                        
+                        <div class="d-flex justify-content-between mb-3 align-items-center">
+                            <span class="fw-bold text-white fs-5">Grand Total</span>
+                            <span class="fw-bold text-warning fs-4">Tk. {{ grand_total }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-4 p-3 rounded-3 text-white align-items-center" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);">
+                            <span class="fw-bold text-danger-emphasis">Cash on Delivery Due</span>
+                            <span class="fw-bold fs-5 text-danger">Tk. {{ due_amount }}</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning w-100 rounded-pill py-3 fw-bold text-dark shadow-lg d-flex align-items-center justify-content-center">
+                            CONFIRM ORDER <i class="fas fa-check-circle ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+{% endblock %}

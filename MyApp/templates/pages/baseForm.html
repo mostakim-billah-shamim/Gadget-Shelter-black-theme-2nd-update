@@ -1,0 +1,80 @@
+{% extends 'base/base.html' %}
+
+{% block body %}
+<div class="form-wrapper-section">
+    <div class="auth-card">
+        
+        <!-- Header Section -->
+        <div class="auth-header">
+            <div class="auth-icon-badge">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2>{% block form_title %}Welcome Back{% endblock %}</h2>
+            <p>{% block form_subtitle %}Please fill in your information below{% endblock %}</p>
+        </div>
+
+        <div class="auth-body">
+
+            <!-- Form-level Errors (Django Non-Field Errors) -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    {% for error in form.non_field_errors %}
+                        <p class="m-0"><i class="fa-solid fa-circle-exclamation me-2"></i>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Form Start -->
+            <form method="POST" action="{% block form_action %}{% endblock %}" enctype="multipart/form-data" class="custom-form" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }} {% if field.field.required %}<span class="required-star">*</span>{% endif %}
+                        </label>
+                        
+                        <div class="input-field-wrapper">
+                            {{ field }}
+                            
+                            <!-- Automatic Password Toggle Icon Injection -->
+                            {% if field.field.widget.input_type == 'password' %}
+                                <button type="button" class="btn-password-toggle" tabindex="-1">
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        {% if field.help_text %}
+                            <small class="help-text">{{ field.help_text }}</small>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class="error-msg">
+                                {% for error in field.errors %}
+                                    <span><i class="fa-solid fa-triangle-exclamation me-1"></i> {{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="submit-btn">
+                    <span>{% block btn_text %}Submit{% endblock %}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Bottom Redirect Links -->
+            <div class="auth-footer">
+                {% block footer_links %}{% endblock %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gadget - Futuristic Tech Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/auth_style.css' %}" rel="stylesheet">
+</head>
+
+
+<body >
+
+    <div class="glow-orb" style="top: 10%; left: 15%;"></div>
+    <div class="glow-orb" style="bottom: 10%; right: 15%; background: rgba(56, 189, 248, 0.15);"></div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="app-container">
+        <!-- Left Banner -->
+        <div class="left-banner">
+            <div class="banner-content">
+                <a href="/" class="brand-logo" >
+                    
+                    <img src="{% static 'img/logo_update.jpg' %}" alt="Logo" height="55" width="55" alt="Logo" class="rounded-circle shadow-sm">
+                    Gadget Shelter
+                </a>
+                <div class="tagline-badge" style="margin-top: 24px;">• NEXT-GEN TECH HUB</div>
+                <h1 class="hero-title" id="bannerTitle">Discover High Tech <span>Gear.</span></h1>
+                <p class="hero-desc" id="bannerDesc">Access ultra-fast devices, exclusive discounts, and next-generation tech gadgets built for your modern lifestyle.</p>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">🛡️</div><span>Authentic Hardware & Warranty</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div><span>Flash Sales & Cyber Discounts</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📦</div><span>Global Express Tech Shipping</span>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-footer">🔒 Encrypted 256-Bit Tech Portal &bull; &copy; 2026 Gadget Shelter</div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+
+            <a href="/" class="back-home-btn" ><span>←</span> Back to Home</a>
+
+            <!-- LOGIN FORM -->
+            <div id="loginFormSection" class="{% if active_tab == 'signup' %}hidden{% endif %}">
+                <div class="form-header">
+                    <h2>Welcome Back!</h2>
+                    <p>Enter your details to access your gadget portal.</p>
+                </div>
+
+                <button class="google-btn" type="button" onclick="showToast('Google auth coming soon...', 'info')">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="divider"><span>Or sign in with email</span></div>
+
+                <form action="{% url 'login' %}" method="POST" id="signInForm" >
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="login">
+
+                    <div class="form-group">
+                        <label for="username">Username <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="username" name="username" class="form-input" required autocomplete="username" placeholder="e.g. alex_tech">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" name="password" class="form-input" required placeholder="••••••••">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('password', this)">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <label class="remember-me-container">
+                            <input type="checkbox" name="remember_me">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Sign In ➔</button>
+                </form>
+
+                <div class="toggle-form-text">
+                    Don't have an account? <a href="javascript:void(0);" onclick="switchForm('signup')">Create Account</a>
+                </div>
+
+                <div class="security-badge">🔒 Protected by end-to-end gadget security.</div>
+            </div>
+
+            <!-- SIGNUP FORM -->
+            <div id="signupFormSection" class="{% if active_tab != 'signup' %}hidden{% endif %}">
+                <div class="form-header">
+                    <h2>Create Account</h2>
+                    <p>Join the next-gen tech community today.</p>
+                </div>
+
+                <button class="google-btn" type="button" onclick="showToast('Google auth coming soon...', 'info')">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="divider"><span>Or register with email</span></div>
+
+                <form action="{% url 'register' %}" method="POST" id="signUpForm" >
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="signup">
+
+                    <div class="form-group">
+                        <label for="signup_username">Username <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="signup_username" name="username" class="form-input" required placeholder="Choose a username">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" name="email" class="form-input" required placeholder="name@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signup_password">Password <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="signup_password" name="password" class="form-input" required placeholder="••••••••">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('signup_password', this)">👁️</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Password Confirmation <span>*</span></label>
+                        <div class="input-wrapper">
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-input" required placeholder="••••••••">
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirm_password', this)">👁️️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" style="margin-top: 10px;">Create Account ➔</button>
+                </form>
+
+                <div class="toggle-form-text">
+                    Already have an account? <a href="javascript:void(0);" onclick="switchForm('login')">Sign In</a>
+                </div>
+
+                <div class="security-badge">🔒 Secure registration with instant verification.</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/auth_style.js' %}"></script>
+
+</body>
+
+</html>

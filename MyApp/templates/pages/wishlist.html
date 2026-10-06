@@ -1,0 +1,195 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    My Wishlist | Gadget Shelter
+{% endblock title %}
+
+{% block body %}
+
+
+
+<div class="wishlist-page-wrapper">
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header-aesthetic py-5 position-relative overflow-hidden mb-2">
+        <div class="header-glow-orb"></div>
+        <div class="container py-3 text-center position-relative z-index-1">
+            <div class="d-inline-flex align-items-center gap-2 header-badge mb-2 shadow-sm">
+                <i class="fas fa-heart"></i> Personal Collection
+            </div>
+            <h1 class="text-white display-6 fw-bold mb-2">
+                My <span class="text-warning">Wishlist</span>
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0 text-uppercase fw-semibold" style="font-size: 0.8rem; letter-spacing: 1px;">
+                    <li class="breadcrumb-item">
+                        <a href="/" class="text-white-50 text-decoration-none">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item text-warning active" aria-current="page">Wishlist</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Wishlist Section Start -->
+    <div class="container pb-5">
+
+        <!-- Django Flash Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4 bg-dark text-light border-start border-4 border-warning" role="alert">
+                    <i class="fas fa-info-circle me-2 text-warning"></i>{{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if not request.user.is_authenticated %}
+        <!-- Guest User / Unauthenticated State -->
+        <div class="row justify-content-center py-4">
+            <div class="col-lg-6 col-md-8 text-center">
+                <div class="card wishlist-glass-card p-4 p-md-5 shadow-lg">
+                    <div class="mb-3">
+                        <div class="d-inline-flex p-3 rounded-circle" style="background: rgba(255, 193, 7, 0.12); border: 1px solid rgba(255, 193, 7, 0.25);">
+                            <i class="fas fa-heart text-warning fs-2"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Please Log In First</h4>
+                    <p class="text-white-50 mb-4 fs-7" style="font-size: 0.9rem;">
+                        আপনার পছন্দের প্রোডাক্টগুলো সেভ করে রাখার জন্য এবং যেকোনো সময় দেখতে একাউন্টে লগইন করুন।
+                    </p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-action-glow rounded-pill px-4 py-2 fw-bold text-decoration-none">
+                            <i class="fas fa-sign-in-alt me-2"></i>Log In Now
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-custom rounded-pill px-4 py-2 fw-semibold text-decoration-none">
+                            Create Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% elif wishlist_items %}
+        <!-- Logged-in User with Items -->
+        <div class="card wishlist-glass-card shadow-lg overflow-hidden">
+            <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 px-4 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0 text-white d-flex align-items-center">
+                    <i class="fas fa-heart text-warning me-2"></i>Saved Wishlist Items
+                </h6>
+                <span class="badge rounded-pill px-3 py-2 fw-semibold" style="background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3);">
+                    {{ wishlist_items|length }} Item(s)
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-dark-custom align-middle text-center mb-0 table-responsive-stack">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="py-3 ps-4 text-start">Product</th>
+                            <th scope="col" class="py-3">Price</th>
+                            <th scope="col" class="py-3">Status</th>
+                            <th scope="col" class="py-3">Action</th>
+                            <th scope="col" class="py-3 pe-4">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in wishlist_items %}
+                        <tr>
+                            <!-- Product Thumbnail & Title -->
+                            <td class="ps-md-4 py-3 text-start td-product-info">
+                                <div class="d-flex align-items-center gap-5">
+                                    <div class="product-img-box d-flex align-items-center justify-content-center">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" class="img-fluid" style="max-height: 130%; object-fit: contain;" alt="{{ item.product.title }}">
+                                        {% else %}
+                                            <i class="fas fa-box text-secondary fs-4"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <h6 class="fw-semibold text-white mb-1 text-truncate" style="max-width: 220px; font-size: 0.92rem;" title="{{ item.product.title }}">
+                                            {{ item.product.title }}
+                                        </h6>
+                                        {% if item.product.model %}
+                                            <span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary border-opacity-25 fw-normal" style="font-size: 0.7rem;">
+                                                Model: {{ item.product.model }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Price -->
+                            <td class="py-3" data-label="Price">
+                                <span class="fw-bold text-warning" style="font-size: 0.95rem;">Tk. {{ item.product.price }}</span>
+                            </td>
+
+                            <!-- Stock Status -->
+                            <td class="py-3" data-label="Status">
+                                {% if item.product.stock and item.product.stock > 0 %}
+                                    <span class="badge  bg-opacity-25 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill" style="font-size: 0.72rem;">In Stock</span>
+                                {% else %}
+                                    <span class="badge  bg-opacity-25 text-danger border border-danger border-opacity-25 px-2 py-1 rounded-pill" style="font-size: 0.72rem;">Out of Stock</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- Add to Cart Button -->
+                            <td class="py-3" data-label="Action">
+                                <form action="{% url 'add_to_cart' item.product.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-action-glow rounded-pill px-3 py-1 fw-bold btn-sm" style="font-size: 0.8rem;">
+                                        <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                                    </button>
+                                </form>
+                            </td>
+
+                            <!-- Remove Action -->
+                            <td class="pe-md-4 py-3" data-label="Remove">
+                                <a href="{% url 'remove_from_wishlist' item.product.id %}" class="btn btn-remove-custom btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;" title="Remove from wishlist">
+                                    <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Continue Shopping Link -->
+        <div class="d-flex justify-content-start mt-4">
+            <a href="/" class="btn btn-outline-custom rounded-pill px-4 py-2 fw-semibold text-decoration-none" style="font-size: 0.85rem;">
+                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+            </a>
+        </div>
+
+        {% else %}
+        <!-- Logged-in User but Empty Wishlist Layout -->
+        <div class="row justify-content-center py-4">
+            <div class="col-lg-6 col-md-8 text-center">
+                <div class="card wishlist-glass-card p-4 p-md-5 shadow-lg">
+                    <div class="mb-3">
+                        <div class="d-inline-flex p-3 rounded-circle" style="background: rgba(255, 193, 7, 0.12); border: 1px solid rgba(255, 193, 7, 0.25);">
+                            <i class="fas fa-heart text-warning fs-1"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold text-white mb-2">Your Wishlist is Empty!</h4>
+                    <p class="text-white-50 mb-4" style="font-size: 0.9rem;">You haven't saved any products to your wishlist yet. Explore products and save your favorite items.</p>
+                    <a href="/" class="btn btn-action-glow rounded-pill px-4 py-2 fw-bold text-decoration-none">
+                        <i class="fas fa-shopping-bag me-2"></i>Discover Products
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    <!-- Wishlist Section End -->
+
+</div>
+
+{% endblock body %}

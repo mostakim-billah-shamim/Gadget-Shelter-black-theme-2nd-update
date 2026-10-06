@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Electro - Electronics Website Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Owl Carousel CSS CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
+
+    <!-- Libraries Stylesheet --> 
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <!-- HTMX CDN -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        /* Global Font Setup */
+        body, html {
+            font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif !important;
+        }
+
+        /* Pure Ultra-Smooth HTMX Transition */
+        #main-content {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+        }
+
+        /* Exit animation */
+        #main-content.htmx-swapping {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+
+        /* Entry animation */
+        #main-content.htmx-added {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+    </style>
+</head>
+
+<body hx-boost="true" hx-target="#main-content" hx-select="#main-content" hx-swap="innerHTML swap:250ms show:window:top">
+
+    <!-- Spinner Start -->
+    <div id="spinner" class="bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center" style="display: none; z-index: 9999;">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Global Messages & Header -->
+    {% include 'base/messages.html' %}
+    {% include 'base/header.html' %}
+
+    <!-- Dynamic Body Container for HTMX Swapping -->
+    <main id="main-content">
+        {% block body %}
+        {% endblock body %}
+    </main>
+
+    <!-- Global Footer -->
+    {% include 'base/footer.html' %}
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- App Scripts (Owl Carousel & Mobile Menu Logic) -->
+    <script>
+        // Safe Carousel Re-initialization
+        function initAllCarousels() {
+            var $heroCarousel = $(".header-carousel, .hero-carousel, .main-carousel");
+            if ($heroCarousel.length) {
+                if ($heroCarousel.hasClass('owl-loaded')) {
+                    $heroCarousel.trigger('destroy.owl.carousel').removeClass('owl-loaded');
+                    $heroCarousel.find('.owl-stage-outer').children().unwrap();
+                }
+                $heroCarousel.owlCarousel({
+                    autoplay: true,
+                    smartSpeed: 1000,
+                    items: 1,
+                    dots: true,
+                    loop: true,
+                    nav: true,
+                    navText: [
+                        '<i class="bi bi-arrow-left"></i>',
+                        '<i class="bi bi-arrow-right"></i>'
+                    ]
+                });
+            }
+
+            var $offerCarousel = $(".offer-carousel");
+            if ($offerCarousel.length) {
+                if ($offerCarousel.hasClass('owl-loaded')) {
+                    $offerCarousel.trigger('destroy.owl.carousel').removeClass('owl-loaded');
+                    $offerCarousel.find('.owl-stage-outer').children().unwrap();
+                }
+                $offerCarousel.owlCarousel({
+                    autoplay: true,
+                    autoplayTimeout: 3500,
+                    autoplayHoverPause: true,
+                    smartSpeed: 800,
+                    loop: true,
+                    margin: 24,
+                    dots: true,
+                    nav: false,
+                    responsive: {
+                        0: { items: 1 },
+                        768: { items: 2 }
+                    }
+                });
+            }
+        }
+
+        // Mobile Navbar Auto-Hide
+        function closeMobileMenu() {
+            var navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                var bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                if (bsCollapse) {
+                    bsCollapse.hide();
+                } else {
+                    navbarCollapse.classList.remove('show');
+                }
+            }
+        }
+
+        // Active Nav Link Class Handler
+        function updateActiveNav() {
+            let currentPath = window.location.pathname;
+            $('.custom-nav-link, .navbar-nav .nav-link, .header-nav a').each(function() {
+                let linkPath = $(this).attr('href');
+                if (linkPath && linkPath === currentPath) {
+                    $(this).addClass('active');
+                } else {
+                    $(this).removeClass('active');
+                }
+            });
+        }
+
+        $(document).off('click', '.navbar-collapse a').on('click', '.navbar-collapse a', function (e) {
+            var $this = $(this);
+            if ($this.hasClass('dropdown-toggle') || 
+                $this.attr('data-bs-toggle') === 'dropdown' || 
+                $this.attr('data-bs-toggle') === 'collapse' || 
+                $this.attr('href') === '#' || 
+                $this.attr('href') === 'javascript:void(0);' ||
+                !$this.attr('href')) {
+                return;
+            }
+            closeMobileMenu();
+        });
+
+        $(document).ready(function(){
+            initAllCarousels();
+            updateActiveNav();
+        });
+
+        // HTMX Fallback & Handlers
+        document.body.addEventListener('htmx:beforeSwap', function(e) {
+            // Target container missing hole or 404/500/Redirect ashle normal full-page refresh execute korbe
+            if (e.detail.xhr.status !== 200 || !e.detail.target || e.detail.target.id !== 'main-content') {
+                e.detail.shouldSwap = false;
+                window.location.href = e.detail.requestConfig.path;
+            }
+        });
+
+        document.body.addEventListener('htmx:responseError', function(e) {
+            window.location.href = e.detail.requestConfig.path;
+        });
+
+        document.body.addEventListener('htmx:afterSettle', function() {
+            initAllCarousels();
+            updateActiveNav();
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>

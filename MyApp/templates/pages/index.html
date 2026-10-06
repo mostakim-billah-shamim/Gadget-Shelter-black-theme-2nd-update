@@ -1,0 +1,491 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}
+Homepage-Gadget Shelter
+{% endblock title %}
+
+
+{% block body %}
+
+
+
+<!-- Carousel Section Start -->
+<div class="carousel-section py-2" style="background-color: #121827;">
+    <div class="container-fluid px-0">
+        <div class="header-carousel owl-carousel">
+
+            {% for carousel in carousels %}
+            <div class="custom-carousel-item position-relative overflow-hidden rounded">
+                <!-- Background Image (Sharp & Clear) -->
+                {% if carousel.image %}
+                <img src="{{ carousel.image.url }}" class="custom-carousel-bg" alt="{{ carousel.title }}">
+                {% else %}
+                <img src="{% static 'img/carousel-1.png' %}" class="custom-carousel-bg" alt="Default Image">
+                {% endif %}
+
+                <!-- Subtle Soft Gradient Overlay (No Blur, Text Readability Only) -->
+                <div class="custom-carousel-overlay"></div>
+
+                <!-- Content directly on image -->
+                <div class="custom-carousel-content d-flex flex-column justify-content-between p-3 p-md-4 p-lg-5">
+                    
+                    <div class="text-content wow fadeInRight" data-wow-delay="0.2s">
+                        <h6 class="text-uppercase fw-bold mb-1 hero-subtitle">
+                            {{ carousel.sub_title }}
+                        </h6>
+                        <h2 class="text-capitalize fw-bold mb-1 hero-title">
+                            {{ carousel.title }}
+                        </h2>
+                        <p class="mb-0 hero-desc d-none d-md-block">
+                            {{ carousel.description }}
+                        </p>
+                    </div>
+
+                    <!-- Button (Left Bottom Corner) -->
+                    <div class="hero-btn-wrapper wow fadeInRight" data-wow-delay="0.5s">
+                        <a class="btn hero-btn rounded-pill" href="{{ carousel.button_link }}">
+                            {{ carousel.button_text }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="p-4 text-center bg-white rounded">
+                <p class="mb-0">No carousel slides found.</p>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+<!-- Carousel Section End -->
+
+
+
+
+
+<!-- Services Start -->
+<div class="features-wrapper py-4 my-3">
+    <div class="container">
+        <div class="row g-3 justify-content-center">
+
+            <!-- Fast Delivery -->
+            <div class="col-6 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 rounded-4 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-2 gap-md-3">
+                    <div class="feature-icon-box rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fas fa-truck fs-5"></i>
+                    </div>
+                    <div class="feature-text w-100 overflow-hidden">
+                        <h6 class="fw-bold mb-1 text-white text-truncate">Fast Delivery</h6>
+                        <p class="mb-0 text-white-50 small lh-sm text-truncate">All over the country</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secure Payment -->
+            <div class="col-6 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 rounded-4 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-2 gap-md-3">
+                    <div class="feature-icon-box rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fas fa-shield-alt fs-5"></i>
+                    </div>
+                    <div class="feature-text w-100 overflow-hidden">
+                        <h6 class="fw-bold mb-1 text-white text-truncate">Secure Payment</h6>
+                        <p class="mb-0 text-white-50 small lh-sm text-truncate">100% safe checkout</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Easy Return -->
+            <div class="col-6 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 rounded-4 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-2 gap-md-3">
+                    <div class="feature-icon-box rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fas fa-sync-alt fs-5"></i>
+                    </div>
+                    <div class="feature-text w-100 overflow-hidden">
+                        <h6 class="fw-bold mb-1 text-white text-truncate">Easy Return</h6>
+                        <p class="mb-0 text-white-50 small lh-sm text-truncate">7 Days Guarantee</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 24/7 Support -->
+            <div class="col-6 col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-3 rounded-4 d-flex flex-column flex-md-row align-items-center text-center text-md-start gap-2 gap-md-3">
+                    <div class="feature-icon-box rounded-circle d-flex align-items-center justify-content-center flex-shrink-0">
+                        <i class="fas fa-headset fs-5"></i>
+                    </div>
+                    <div class="feature-text w-100 overflow-hidden">
+                        <h6 class="fw-bold mb-1 text-white text-truncate">24/7 Support</h6>
+                        <p class="mb-0 text-white-50 small lh-sm text-truncate">Dedicated support</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Services End -->
+
+
+
+
+
+
+
+
+<!-- Featured Category Section Start -->
+<section class="featured-categories-section py-5" style="background-color: #0b0f19;">
+    <div class="container" style="max-width: 950px;">
+        
+        <!-- Section Header -->
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-white mb-1">Featured Category</h2>
+            <p class="text-warning small mb-0">Get Your Desired Product from Featured Category!</p>
+        </div>
+
+        <!-- Categories Grid (Responsive for all screens) -->
+        <div class="row g-2 g-md-3 justify-content-center">
+            {% for cat in categories %}
+            <!-- Mobile: col-4 (3 items per row), Tablet/Desktop: col-sm-3 col-md-3 col-lg-2 -->
+            <div class="col-4 col-sm-3 col-md-3 col-lg-2">
+                <a href="{% url 'shop' %}?category={{ cat.slug }}" 
+                    class="category-card d-flex flex-column align-items-center justify-content-center p-2 p-md-3 text-decoration-none text-center h-100 shadow-sm overflow-hidden">
+    
+                    <div class="category-icon-wrapper mb-2 d-flex align-items-center justify-content-center">
+                        {% if cat.image %}
+                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="img-fluid category-img" style="max-height: 40px; width: auto; object-fit: contain;">
+                        {% else %}
+                            <i class="fas fa-microchip fs-3 text-warning"></i>
+                        {% endif %}
+                    </div>
+                    <h6 class="category-title fw-semibold text-white mb-0 x-small">{{ cat.name }}</h6>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+<!-- Featured Category Section End -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- Products Offer Start -->
+{% if offer_products %}
+<div class="container-fluid py-5" style="background-color: #121827;">
+    <div class="container">
+        <!-- owl-carousel class and theme class added -->
+        <div class="owl-carousel owl-theme offer-carousel">
+            {% for product in offer_products %}
+            <div class="item">
+                <a href="{% url 'single' product.pk %}" class="d-flex align-items-center justify-content-between rounded-4 p-4 text-decoration-none shadow-sm offer-card" style="background-color: #1a2234; border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <div>
+                        <p class="text-warning mb-2 fs-6">Find The Best {{ product.category.name }} for You!</p>
+                        <h3 class="text-white fw-bold text-truncate mb-2" style="max-width: 250px;">{{ product.title }}</h3>
+                        <h1 class="display-4 text-danger fw-bold mb-0">
+                            {% if product.discount_percentage > 0 %}
+                                {{ product.discount_percentage }}% <span class="text-warning fw-normal">Off</span>
+                            {% else %}
+                                Special <span class="text-warning fw-normal">Offer</span>
+                            {% endif %}
+                        </h1>
+                    </div>
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded-3 product-offer-img" alt="{{ product.title }}" style="max-height: 150px; width: auto; object-fit: contain;">
+                    {% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Products Offer End -->
+
+
+
+
+
+
+
+<!-- Our Products Start -->
+<div class="container-fluid product py-5 position-relative overflow-hidden" style="background-color: #0b0f19;">
+
+
+
+    <div class="container py-5 position-relative" style="z-index: 2;">
+        <div class="text-center">
+
+            <!-- Header & Filter Nav -->
+            <div class="row g-4 align-items-center mb-5">
+                <!-- Section Title (Desktop: Left, Mobile: Center) -->
+                <div class="col-lg-5 text-center text-lg-start wow fadeInLeft" data-wow-delay="0.1s">
+                    <span class="text-uppercase tracking-wider text-primary fw-bold fs-7 d-block mb-1">
+                        Exclusive Collection
+                    </span>
+                    <h2 class="fw-black text-white display-6 mb-0 position-relative d-inline-block">
+                        Our Products
+                        <span class="header-line"></span>
+                    </h2>
+                </div>
+
+                <!-- Filter Buttons Navigation (Desktop: Inline, Mobile: 2x2 Grid) -->
+                <div class="col-lg-7 text-center text-lg-end wow fadeInRight" data-wow-delay="0.1s">
+                    <ul class="nav nav-pills d-inline-flex modern-tab-nav p-1-5 shadow-sm id="product-filter-nav">
+                        <li class="nav-item">
+                            <button class="nav-link py-2 px-3 px-md-4 active text-warning fw-semibold filter-btn" data-filter="all">
+                                All Products
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-2 px-3 px-md-4 fw-semibold text-warning filter-btn" data-filter="new-arrivals">
+                                New Arrivals
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-2 px-3 px-md-4 fw-semibold text-warning filter-btn" data-filter="featured">
+                                Featured
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-2 px-3 px-md-4 fw-semibold text-warning filter-btn" data-filter="top-selling">
+                                Top Selling
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+             
+            <div class="row g-4 d-flex flex-wrap w-100 mx-0" id="product-grid">
+                {% for product in products %}
+                
+                <!-- Model Fields অনুযায়ী Dynamic Filter Classes যুক্ত করা হয়েছে -->
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item filter-card p-2 {% if product.is_new %}new-arrivals{% endif %} {% if product.is_featured %}featured{% endif %} {% if product.is_top_selling %}top-selling{% endif %}">
+                    
+                    <div class="ultra-card h-100 rounded-4 border-0 position-relative shadow-sm overflow-hidden d-flex flex-column" style="background-color: #1a2234; border: 1px solid rgba(255, 255, 255, 0.08);">
+
+                        <!-- 1. Image Container -->
+                        <div class="card-img-wrapper position-relative overflow-hidden w-100">
+                            <!-- Badges -->
+                            <div class="position-absolute top-0 start-0 m-3 z-3 d-flex flex-column gap-1 align-items-start pointer-events-none">
+                                {% if product.discount_percentage > 0 %}
+                                <span class="custom-badge badge-sale text-white fw-bold px-2 py-1 rounded-pill shadow-sm">
+                                    -{{ product.discount_percentage }}% OFF
+                                </span>
+                                {% elif product.is_offer %}
+                                <span class="custom-badge badge-offer bg-warning text-dark fw-bold px-2 py-1 rounded-pill shadow-sm">
+                                    Offer
+                                </span>
+                                {% endif %}
+
+                                {% if product.is_new %}
+                                <span class="custom-badge badge-new bg-primary text-white fw-bold px-2 py-1 rounded-pill shadow-sm">
+                                    New
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Image -->
+                            <a href="{% url 'single' product.pk %}" class="d-block w-100 h-100">
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" class="main-product-img" alt="{{ product.title }}">
+                                {% else %}
+                                <img src="https://via.placeholder.com/400x300" class="main-product-img" alt="No Image">
+                                {% endif %}
+                            </a>
+                        </div>
+
+                        <!-- 2. Card Body -->
+                        <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1 text-center">
+                            <div>
+                                <!-- Category -->
+                                <span class="category-tag text-uppercase fw-bold text-warning mb-1 d-block style-cat-title">
+                                    {{ product.category.name }}
+                                </span>
+
+                                <!-- Title -->
+                                <h6 class="product-title fw-bold mb-2">
+                                    <a href="{% url 'single' product.pk %}" class="text-white text-decoration-none">
+                                        {{ product.title }}
+                                    </a>
+                                </h6>
+
+                                <!-- Description -->
+                                {% if product.description %}
+                                <p class="product-desc text-muted mb-2 fs-7 px-1">
+                                    {{ product.description|truncatewords:8 }}
+                                </p>
+                                {% endif %}
+
+                                <!-- Price Block -->
+                                <div class="price-box mb-3 d-flex flex-column align-items-center justify-content-center">
+                                    <span class="current-price fw-bold fs-5 text-warning">
+                                        ৳ {% if product.new_price %}{{ product.new_price }}{% else %}{{ product.price }}{% endif %}
+                                    </span>
+                                    {% if product.old_price %}
+                                    <span class="old-price text-muted text-decoration-line-through fs-7 d-block mt-1 opacity-75">
+                                        ৳ {{ product.old_price }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Action Controls -->
+                            <div class="card-bottom-actions mt-auto">
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <a href="{% url 'single' product.pk %}" class="btn btn-add-cart flex-grow-1 rounded-pill py-2 px-2 fw-semibold d-flex align-items-center justify-content-center gap-1">
+                                        <i class="fas fa-shopping-cart fs-7"></i>
+                                        <span class="btn-text">View Product</span>
+                                    </a>
+                                    
+                                    <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                                        <a href="{% url 'add_to_wishlist' product.id %}" class="btn-action-icon" title="Add to Wishlist">
+                                            <i class="fas fa-heart"></i>
+                                        </a>
+                                        <a href="{% url 'add_to_compare' product.id %}" class="btn-action-icon" title="Compare Product">
+                                            <i class="fas fa-random"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Our Products End -->
+
+
+
+
+
+<!-- Product Banner Start -->
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div class="container">
+        <!-- added align-items-stretch for equal heights -->
+        <div class="row g-4 align-items-stretch">
+
+            <!-- Left Banner (Product Spotlight) -->
+            {% if special_deal %}
+            <div class="col-lg-6 d-flex wow fadeInLeft" data-wow-delay="0.1s">
+                <div class="banner-card rounded-4 overflow-hidden position-relative shadow-sm w-100 d-flex flex-column">
+                    <!-- Dynamic Product Image -->
+                    <img src="{{ special_deal.image.url }}" class="img-fluid w-100 banner-img position-absolute top-0 start-0 h-100"
+                        alt="{{ special_deal.title }}" style="object-fit: cover;">
+
+                    <!-- Glassmorphism Content Overlay -->
+                    <div class="banner-overlay p-4 p-md-5 d-flex flex-column justify-content-between h-100 position-relative z-1">
+                        
+                        <!-- Dynamic Wishlist Action -->
+                        <div class="d-flex gap-2 ms-auto">
+                            <a href="#" class="banner-action-btn" title="Add to Wishlist">
+                                <i class="fas fa-heart text-danger"></i>
+                            </a>
+                        </div>
+
+                        <!-- Dynamic Product Details -->
+                        <div class="banner-content mt-auto">
+                            <span class="badge bg-primary px-3 py-2 rounded-pill text-uppercase fw-semibold mb-2">
+                                Special Deal
+                            </span>
+
+                            <!-- Product Title -->
+                            <h2 class="display-6 fw-bold text-dark mb-1">
+                                {{ special_deal.title }}
+                            </h2>
+
+                            <!-- Dynamic Price Display -->
+                            <p class="fs-4 fw-bold text-dark mb-3">
+                                {% if special_deal.new_price %}
+                                    Tk. {{ special_deal.new_price }}
+                                    {% if special_deal.old_price %}
+                                    <br>
+                                        <del class="fs-6 text-muted fw-normal ms-2">Tk. {{ special_deal.old_price }}</del>
+                                    {% endif %}
+                                {% else %}
+                                    Tk. {{ special_deal.price }}
+                                {% endif %}
+                            </p>
+
+                            <!-- Dynamic Detail Page Link -->
+                            <a href="{% url 'single' special_deal.id %}"
+                                class="btn btn-primary rounded-pill px-4 py-2-5 fw-semibold shadow-sm hover-pulse">
+                                Shop Now <i class="fas fa-arrow-right ms-2 fs-7"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Right Banner (Professional Dynamic Sale Offer Banner) -->
+            <div class="col-lg-6 d-flex wow fadeInRight" data-wow-delay="0.2s">
+                <div class="banner-card rounded-4 overflow-hidden position-relative shadow-sm w-100 d-flex flex-column">
+                    
+                    
+                    
+
+                    <!-- Vibrant Gradient Overlay (Lightened) -->
+                    <div class="banner-overlay-sale p-4 p-md-5 d-flex flex-column justify-content-center align-items-center text-center h-100 position-relative z-1">
+                        
+                        <!-- Top Animated Badge -->
+                        <span class="badge bg-white text-danger px-3 py-2 rounded-pill text-uppercase fw-bold mb-3 shadow-sm d-inline-flex align-items-center gap-2">
+                            <i class="fas fa-fire text-danger animate-bounce"></i> Limited Time Offer
+                        </span>
+                        
+                        <!-- Main Headline -->
+                        <h2 class="display-3 fw-black text-white text-uppercase tracking-wide mb-1 drop-shadow">
+                            FLASH SALE
+                        </h2>
+
+                        <!-- Dynamic Max Discount Percentage -->
+                        <h4 class="fs-2 fw-bold text-white mb-2">
+                            Get Up To <span class="text-warning">{% if max_discount > 0 %}{{ max_discount }}%{% else %}50%{% endif %} Off</span>
+                        </h4>
+
+                        <!-- Live Offer Items Count Indicator -->
+                        {% if total_offer_items > 0 %}
+                            <p class="text-white fw-semibold mb-4 small drop-shadow">
+                                <i class="fas fa-tags me-1 text-warning"></i> Over <span class="text-warning fw-bold">{{ total_offer_items }}</span> items currently on discount!
+                            </p>
+                        {% else %}
+                            <p class="text-white fw-semibold mb-4 small drop-shadow">
+                                <i class="fas fa-clock me-1 text-warning"></i> Special deals available for a limited time!
+                            </p>
+                        {% endif %}
+
+                        <!-- Filtered Shop Page Link -->
+                        
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Product Banner End -->
+
+
+
+
+
+{% endblock body %}
