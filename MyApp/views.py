@@ -719,6 +719,7 @@ def track_order(request):
         if request.user.is_staff or request.user.is_superuser:
             order_id = request.POST.get("order_id")
             new_status = request.POST.get("status")
+            current_status_filter = request.GET.get("status_filter", "")
             
             order = get_object_or_404(Order, order_id=order_id)
             order.status = new_status
@@ -726,9 +727,11 @@ def track_order(request):
             
             messages.success(request, f"Order {order_id} status updated to '{new_status}' successfully!")
             
-            # Status update hoye gele oi specific order_id shoho redirect hobe
-            # jate automatic oi order-ti-i opore track view-e shob details shoho ashbe
-            return redirect(f"{request.path}?order_id={order.order_id}&phone={order.phone}")
+            # Status update এর পর রিডাইরেক্টে ফিল্টার ফিল্ড ধরে রাখা হবে
+            redirect_url = f"{request.path}?order_id={order.order_id}&phone={order.phone}"
+            if current_status_filter:
+                redirect_url += f"&status_filter={current_status_filter}"
+            return redirect(redirect_url)
         
     orders = []
     searched_order = None
@@ -736,13 +739,13 @@ def track_order(request):
     
     # অ্যাডমিন সামারি ডেটা
     admin_summary = {}
+    selected_status = request.GET.get('status_filter', '').strip()
 
-    # ১. ইউজার যদি অ্যাডমিন/স্টাফ হন, তবে সকল অর্ডার লোড করা ও পরিসংখ্যান তৈরি করা
+    # ১. ইউজার যদি অ্যাডমিন/স্টাফ হন, তবে সকল অর্ডার লোড করা ও ফিল্টার প্রযোজ্য করা
     if request.user.is_staff or request.user.is_superuser:
         all_orders = Order.objects.all().order_by('-created_at')
-        orders = all_orders
         
-        # স্ট্যাটাস ভিত্তিক সামারি কাউন্ট
+        # স্ট্যাটাস ভিত্তিক সামারি কাউন্ট (ফিল্টারের পূর্বের মোট হিসাবের জন্য)
         admin_summary = {
             'total': all_orders.count(),
             'pending': all_orders.filter(status__iexact='Pending').count(),
@@ -751,6 +754,13 @@ def track_order(request):
             'delivered': all_orders.filter(status__iexact='Delivered').count(),
             'cancelled': all_orders.filter(status__iexact='Cancelled').count(),
         }
+
+        # স্ট্যাটাস ফিল্টার সিলেক্ট করা থাকলে কোয়েরি ফিল্টার করা
+        if selected_status:
+            orders = all_orders.filter(status__iexact=selected_status)
+        else:
+            orders = all_orders
+
     # সাধারণ লগইন করা ইউজার হলে শুধু তার নিজস্ব অর্ডার লোড করা
     elif request.user.is_authenticated:
         orders = Order.objects.filter(user=request.user).order_by('-created_at')
@@ -779,9 +789,9 @@ def track_order(request):
         'searched_order': searched_order,
         'searched': searched,
         'admin_summary': admin_summary,
+        'selected_status': selected_status, # টেমপ্লেটের জন্য পাঠানো হলো
     }
     return render(request, 'pages/track_order.html', context)
-
 
 
 

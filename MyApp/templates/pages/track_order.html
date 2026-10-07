@@ -219,85 +219,117 @@
 
     <!-- ADMIN TABLE VIEW -->
     {% if request.user.is_staff or request.user.is_superuser %}
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <div class="card glass-card border-white-10 overflow-hidden">
-                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 px-3 px-md-4">
-                        <h5 class="fw-bold mb-0 text-white fs-6 fs-md-5"><i class="fas fa-list-alt me-2 text-warning"></i>All Customer Orders System</h5>
-                    </div>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card glass-card border-white-10 overflow-hidden">
+                
+                <!-- HEADER WITH RIGHT-SIDE FILTER DROPDOWN -->
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3 px-3 px-md-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="fw-bold mb-0 text-white fs-6 fs-md-5">
+                        <i class="fas fa-list-alt me-2 text-warning"></i>All Customer Orders System
+                    </h5>
                     
-                    <div class="table-responsive">
-                        <table class="table table-dark custom-dark-striped table-hover align-middle mb-0 text-center bg-transparent">
-                            <thead class="text-white-50 small text-uppercase table-head-bg">
-                                <tr>
-                                    <th class="py-3 ps-3 ps-md-4 text-start text-nowrap">Order ID & Date</th>
-                                    <th class="py-3 text-start text-nowrap">Customer Details</th>
-                                    <th class="py-3 text-nowrap">Amount & Due</th>
-                                    <th class="py-3 table-status-col text-nowrap">Status</th>
-                                    <th class="py-3 pe-3 pe-md-4 text-nowrap">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="border-top border-secondary border-opacity-25">
-                                {% for order in orders %}
-                                <tr class="clickable-row" onclick="window.location.href='?order_id={{ order.order_id }}&phone={{ order.phone }}';">
-                                    <td class="ps-3 ps-md-4 py-3 text-start">
-                                        <div class="fw-bold text-warning fs-6 text-nowrap">{{ order.order_id }}</div>
-                                        <small class="text-white-50 text-nowrap d-block"><i class="far fa-calendar-alt me-1"></i>{{ order.created_at|date:"d M Y, h:i A" }}</small>
-                                    </td>
+                    <!-- STATUS FILTER FORM -->
+                    <form method="GET" class="d-flex align-items-center gap-2 m-0">
+                        <!-- Search param থাকলে ধরে রাখার জন্য hidden inputs -->
+                        {% if request.GET.order_id %}
+                            <input type="hidden" name="order_id" value="{{ request.GET.order_id }}">
+                        {% endif %}
+                        {% if request.GET.phone %}
+                            <input type="hidden" name="phone" value="{{ request.GET.phone }}">
+                        {% endif %}
 
-                                    <td class="py-3 text-start">
-                                        <div class="fw-bold text-white text-nowrap">{{ order.full_name }}</div>
-                                        <small class="text-white-50 d-block text-nowrap"><i class="fas fa-phone me-1"></i>{{ order.phone }}</small>
-                                        <small class="text-white-50 text-nowrap"><i class="fas fa-map-marker-alt me-1"></i>{{ order.city }}</small>
-                                    </td>
+                        <label for="statusFilter" class="text-white small fw-semibold text-nowrap d-none d-sm-inline mb-0">
+                            <i class="fas fa-filter me-1 text-warning"></i>Filter:
+                        </label>
+                        
+                        <select id="statusFilter" name="status_filter" onchange="this.form.submit()" 
+                                class="form-select form-select-sm rounded-pill text-warning fw-bold px-3 py-1 shadow-lg border-warning"
+                                style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); cursor: pointer;">
+                            <option value="" style="background-color: #0f172a; color: #f8fafc; padding: 10px;" {% if not selected_status %}selected{% endif %}>All Statuses</option>
+                            <option value="Pending" style="background-color: #0f172a; color: #ffc107; padding: 10px;" {% if selected_status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                            <option value="Confirmed" style="background-color: #0f172a; color: #0dcaf0; padding: 10px;" {% if selected_status == 'Confirmed' %}selected{% endif %}>👍 Confirmed</option>
+                            <option value="Processing" style="background-color: #0f172a; color: #0d6efd; padding: 10px;" {% if selected_status == 'Processing' %}selected{% endif %}>⚙️ Processing</option>
+                            <option value="Shipped" style="background-color: #0f172a; color: #6f42c1; padding: 10px;" {% if selected_status == 'Shipped' %}selected{% endif %}>🚚 Shipped</option>
+                            <option value="Delivered" style="background-color: #0f172a; color: #198754; padding: 10px;" {% if selected_status == 'Delivered' %}selected{% endif %}>✅ Delivered</option>
+                            <option value="Cancelled" style="background-color: #0f172a; color: #dc3545; padding: 10px;" {% if selected_status == 'Cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                        </select>
+                    </form>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-dark custom-dark-striped table-hover align-middle mb-0 text-center bg-transparent">
+                        <thead class="text-white-50 small text-uppercase table-head-bg">
+                            <tr>
+                                <th class="py-3 ps-3 ps-md-4 text-start text-nowrap">Order ID & Date</th>
+                                <th class="py-3 text-start text-nowrap">Customer Details</th>
+                                <th class="py-3 text-nowrap">Amount & Due</th>
+                                <th class="py-3 table-status-col text-nowrap">Status</th>
+                                <th class="py-3 pe-3 pe-md-4 text-nowrap">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top border-secondary border-opacity-25">
+                            {% for order in orders %}
+                            <tr class="clickable-row" onclick="window.location.href='?order_id={{ order.order_id }}&phone={{ order.phone }}{% if selected_status %}&status_filter={{ selected_status }}{% endif %}';">
+                                <td class="ps-3 ps-md-4 py-3 text-start">
+                                    <div class="fw-bold text-warning fs-6 text-nowrap">{{ order.order_id }}</div>
+                                    <small class="text-white-50 text-nowrap d-block"><i class="far fa-calendar-alt me-1"></i>{{ order.created_at|date:"d M Y, h:i A" }}</small>
+                                </td>
 
-                                    <td class="py-3">
-                                        <div class="fw-bold text-white text-nowrap">Tk. {{ order.grand_total }}</div>
-                                        <small class="fw-semibold text-due text-nowrap">Due: Tk. {{ order.due_amount }}</small>
-                                    </td>
+                                <td class="py-3 text-start">
+                                    <div class="fw-bold text-white text-nowrap">{{ order.full_name }}</div>
+                                    <small class="text-white-50 d-block text-nowrap"><i class="fas fa-phone me-1"></i>{{ order.phone }}</small>
+                                    <small class="text-white-50 text-nowrap"><i class="fas fa-map-marker-alt me-1"></i>{{ order.city }}</small>
+                                </td>
 
-                                    <!-- DYNAMIC STATUS DROPDOWN -->
-                                    <td class="py-3" onclick="event.stopPropagation();">
-                                        <form method="POST" class="d-inline-block w-100">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="update_status" value="1">
-                                            <input type="hidden" name="order_id" value="{{ order.order_id }}">
-                                            
-                                            <select name="status" onchange="this.form.submit()" 
-                                                class="form-select form-select-sm rounded-pill fw-semibold text-center px-2 py-1 select-status-{{ order.status|lower }}">
-                                                <option value="Pending" class="bg-dark text-white" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
-                                                <option value="Confirmed" class="bg-dark text-white" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
-                                                <option value="Processing" class="bg-dark text-white" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
-                                                <option value="Shipped" class="bg-dark text-white" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
-                                                <option value="Delivered" class="bg-dark text-white" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
-                                                <option value="Cancelled" class="bg-dark text-white" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
-                                            </select>
-                                        </form>
+                                <td class="py-3">
+                                    <div class="fw-bold text-white text-nowrap">Tk. {{ order.grand_total }}</div>
+                                    <small class="fw-semibold text-due text-nowrap">Due: Tk. {{ order.due_amount }}</small>
+                                </td>
 
-                                        {% if order.status == 'Cancelled' and order.cancel_reason %}
-                                            <small class="d-block fw-semibold mt-1 cancel-reason-text text-nowrap">
-                                                Reason: {{ order.cancel_reason }}
-                                            </small>
-                                        {% endif %}
-                                    </td>
+                                <!-- DYNAMIC STATUS DROPDOWN -->
+                                <td class="py-3" onclick="event.stopPropagation();">
+                                    <form method="POST" action="?{% if selected_status %}status_filter={{ selected_status }}&{% endif %}{% if request.GET.order_id %}order_id={{ request.GET.order_id }}&{% endif %}" class="d-inline-block w-100">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="update_status" value="1">
+                                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                                        
+                                        <select name="status" onchange="this.form.submit()" 
+                                            class="form-select form-select-sm rounded-pill fw-semibold text-center px-2 py-1 select-status-{{ order.status|lower }}">
+                                            <option value="Pending" class="bg-dark text-white" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Confirmed" class="bg-dark text-white" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                                            <option value="Processing" class="bg-dark text-white" {% if order.status == 'Processing' %}selected{% endif %}>Processing</option>
+                                            <option value="Shipped" class="bg-dark text-white" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                            <option value="Delivered" class="bg-dark text-white" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                            <option value="Cancelled" class="bg-dark text-white" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                        </select>
+                                    </form>
 
-                                    <td class="pe-3 pe-md-4 py-3" onclick="event.stopPropagation();">
-                                        <a href="?order_id={{ order.order_id }}&phone={{ order.phone }}" class="btn btn-sm rounded-pill px-3 btn-track text-nowrap">
-                                            <i class="fas fa-eye me-1"></i>Track
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="py-4 text-center text-white-50">No orders found.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                    {% if order.status == 'Cancelled' and order.cancel_reason %}
+                                        <small class="d-block fw-semibold mt-1 cancel-reason-text text-nowrap">
+                                            Reason: {{ order.cancel_reason }}
+                                        </small>
+                                    {% endif %}
+                                </td>
+
+                                <td class="pe-3 pe-md-4 py-3" onclick="event.stopPropagation();">
+                                    <a href="?order_id={{ order.order_id }}&phone={{ order.phone }}{% if selected_status %}&status_filter={{ selected_status }}{% endif %}" class="btn btn-sm rounded-pill px-3 btn-track text-nowrap">
+                                        <i class="fas fa-eye me-1"></i>Track
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="py-4 text-center text-white-50">No orders found{% if selected_status %} with status "{{ selected_status }}"{% endif %}.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
+
 
     <!-- NORMAL USER ORDER LIST VIEW -->
     {% elif request.user.is_authenticated %}
