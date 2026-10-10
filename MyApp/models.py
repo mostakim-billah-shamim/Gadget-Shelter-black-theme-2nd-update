@@ -241,8 +241,8 @@ class Order(models.Model):
 
     # Payment details (bKash/Nagad Advance)
     payment_method = models.CharField(max_length=50, default='bKash Advance + COD')
-    sender_bkash_no = models.CharField(max_length=15)
-    trx_id = models.CharField(max_length=100)
+    sender_bkash_no = models.CharField(max_length=15, blank=True, null=True)
+    trx_id = models.CharField(max_length=100, blank=True, null=True)
     advance_paid = models.DecimalField(max_digits=10, decimal_places=2)
 
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Pending Verification')

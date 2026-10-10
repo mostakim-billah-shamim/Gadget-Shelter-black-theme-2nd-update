@@ -72,11 +72,11 @@
     <!-- Spinner End -->
 
     <!-- Global Messages & Header -->
-    {% include 'base/messages.html' %}
     {% include 'base/header.html' %}
-
+    
     <!-- Dynamic Body Container for HTMX Swapping -->
     <main id="main-content">
+        {% include 'base/messages.html' %}
         {% block body %}
         {% endblock body %}
     </main>

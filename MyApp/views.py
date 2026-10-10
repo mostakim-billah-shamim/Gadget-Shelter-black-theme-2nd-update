@@ -15,6 +15,11 @@ from django.db.models import Q
 
 
 
+
+# ================= registerPage =================
+
+
+
 def registerPage(request):
     form = RegisterForm()
     
@@ -39,6 +44,14 @@ def registerPage(request):
         'form': form,
     }
     return render(request, 'base/authBaseForm.html', context)
+
+
+
+
+
+
+# ================= loginPage =================
+
 
 
 
@@ -80,6 +93,13 @@ def loginPage(request):
 
 
 
+
+
+# ================= logoutPage =================
+
+
+
+
 @login_required
 def logoutPage(request):
     logout(request)
@@ -96,6 +116,15 @@ def logoutPage(request):
     response['Expires'] = '0'
     
     return response
+
+
+
+
+
+
+# ================= change_password =================
+
+
 
 
 @login_required
@@ -116,6 +145,11 @@ def change_password(request):
     return render(request, 'pages/baseForm.html', {'form': form})
 
 
+
+
+
+
+# ================= HomePage =================
 
 
 
@@ -161,6 +195,16 @@ def HomePage(request):
         
     }
     return render(request, 'pages/index.html', context)
+
+
+
+
+
+
+
+
+# ================= ShopPage =================
+
 
 
 def ShopPage(request):
@@ -237,7 +281,7 @@ def ShopPage(request):
 
 
 
-
+# ================= ContactPage =================
 
 
 
@@ -289,7 +333,7 @@ def ContactPage(request):
 
 
 
-
+# ================= contact_message_list =================
 
 
 def contact_message_list(request):
@@ -313,12 +357,29 @@ def contact_message_list(request):
 
 
 
+
+
+
+
+# ================= toggle_message_done =================
+
+
+
+
 def toggle_message_done(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     msg.is_read = not msg.is_read  # is_done এর জায়গায় is_read
     msg.save()
     messages.info(request, "Status updated successfully!")
     return redirect('contact_message_list')
+
+
+
+
+
+
+# ================= delete_contact_message =================
+
 
 
 def delete_contact_message(request, pk):
@@ -335,14 +396,7 @@ def delete_contact_message(request, pk):
 
 
 
-
-
-
-
-
-
-
-
+# ================= SinglePage =================
 
 
 
@@ -411,9 +465,9 @@ def SinglePage(request, pk):
 
 
 
+# ================= CartPage =================
 
 
-# ১. কার্ট পেজ ভিউ (কুপন ও শিপিং চার্জ সহ)
 def CartPage(request):
     cart = request.session.get('cart', {})
     cart_items = []
@@ -498,7 +552,13 @@ def CartPage(request):
     return render(request, 'pages/cart.html', context)
 
 
-# ২. কার্টে প্রোডাক্ট যোগ করার ভিউ
+
+
+
+
+# ================= add_to_cart =================
+
+
 def add_to_cart(request, product_id):
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
@@ -521,7 +581,10 @@ def add_to_cart(request, product_id):
     return redirect('cart')
 
 
-# ৩. কার্ট থেকে প্রোডাক্ট ডিলিট করার ভিউ
+
+
+
+
 def remove_from_cart(request, item_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
@@ -584,7 +647,17 @@ def remove_from_wishlist(request, product_id):
     return redirect('wishlist')
 
 
+
+
+
+
+
+
 # ================= COMPARE VIEWS (Session Based) =================
+
+
+
+
 
 
 
@@ -593,6 +666,10 @@ def compare_view(request):
     compare_ids = request.session.get('compare_list', [])
     products = Product.objects.filter(id__in=compare_ids)
     return render(request, 'pages/compare.html', {'products': products})
+
+
+
+
 
 def add_to_compare(request, product_id):
     """Compare লিস্টে সর্বোচ্চ ৪টি প্রোডাক্ট সেশনে সেভ করবে"""
@@ -611,6 +688,10 @@ def add_to_compare(request, product_id):
 
 
 
+
+#  ------------------- -------------remove_from_compare--------------------------------
+
+
 def remove_from_compare(request, product_id):
     """Compare লিস্ট থেকে একটি প্রোডাক্ট বাদ দেবে"""
     compare_list = request.session.get('compare_list', [])
@@ -624,7 +705,10 @@ def remove_from_compare(request, product_id):
 
 
 
-# ১. চেকআউট পেজ ভিউ
+
+#  ------------------- -------------checkout_page--------------------------------
+
+
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -649,15 +733,44 @@ def checkout_page(request):
     delivery_charge = float(selected_shipping.amount) if selected_shipping else 100.0
 
     grand_total = max(0, (float(total_price) - coupon_discount)) + delivery_charge
-    due_amount = grand_total - delivery_charge  # ডেলিভারি চার্জ বাদ দিয়ে বাকিটা COD
+    due_amount = grand_total - delivery_charge  # ডেলিভারি চার্জ বাদ দিয়ে বাকিটা COD
+
+    # ডিফল্ট পসিবল ফর্ম ডেটা ইনিশিয়ালাইজ করা (যাতে এরর হলে ফিল্ড মুছে না যায়)
+    form_data = {}
 
     if request.method == "POST":
-        full_name = request.POST.get('full_name')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        sender_bkash_no = request.POST.get('sender_bkash_no')
-        trx_id = request.POST.get('trx_id')
+        full_name = request.POST.get('full_name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        city = request.POST.get('city', '').strip()
+        sender_bkash_no = request.POST.get('sender_bkash_no', '').strip()
+        trx_id = request.POST.get('trx_id', '').strip()
+
+        # ফর্ম ডেটা ডিকশনারিতে সেভ রাখা
+        form_data = {
+            'full_name': full_name,
+            'phone': phone,
+            'address': address,
+            'city': city,
+            'sender_bkash_no': sender_bkash_no,
+            'trx_id': trx_id,
+        }
+
+        # ভ্যালিডেশন: বিকাশ নম্বর অথবা TrxID এর যেকোনো একটি অবশ্যই দিতে হবে
+        if not sender_bkash_no and not trx_id:
+            messages.error(request, "অনুগ্রহ করে আপনার বিকাশ নম্বর (অথবা শেষ ৪ ডিজিট) অথবা TrxID-এর যেকোনো একটি পূরণ করুন!")
+            
+            # আগের ক্যালকুলেটেড ভেরিয়েবল ও form_data সহ পেজ রেন্ডার করা (redirect না করে সরাসরি render)
+            context = {
+                'cart_items': cart_items,
+                'total_price': total_price,
+                'coupon_discount': coupon_discount,
+                'delivery_charge': delivery_charge,
+                'grand_total': grand_total,
+                'due_amount': due_amount,
+                'form_data': form_data, # আগের টাইপ করা ডেটা ব্যাক পাঠানো হলো
+            }
+            return render(request, 'pages/checkout.html', context)
 
         # অর্ডার অবজেক্ট তৈরি
         order = Order.objects.create(
@@ -671,8 +784,8 @@ def checkout_page(request):
             delivery_charge=delivery_charge,
             grand_total=grand_total,
             due_amount=due_amount,
-            sender_bkash_no=sender_bkash_no,
-            trx_id=trx_id,
+            sender_bkash_no=sender_bkash_no if sender_bkash_no else "N/A",
+            trx_id=trx_id if trx_id else "N/A",
             advance_paid=delivery_charge
         )
 
@@ -700,11 +813,19 @@ def checkout_page(request):
         'delivery_charge': delivery_charge,
         'grand_total': grand_total,
         'due_amount': due_amount,
+        'form_data': form_data,
     }
     return render(request, 'pages/checkout.html', context)
 
 
-# ২. অর্ডার সাকসেস কনফার্মেশন ভিউ
+
+
+
+
+
+#  ------------------- -------------Order Success--------------------------------
+
+
 def order_success(request, order_id):
     order = get_object_or_404(Order, order_id=order_id)
     return render(request, 'pages/order_success.html', {'order': order})
@@ -712,7 +833,9 @@ def order_success(request, order_id):
 
 
 
-# ৩. অর্ডার ট্র্যাকিং ভিউ
+
+#  ------------------- -------------Track Order--------------------------------
+
 def track_order(request):
     # ADMIN STATUS UPDATE LOGIC
     if request.method == "POST" and "update_status" in request.POST:
@@ -795,4 +918,4 @@ def track_order(request):
 
 
 
-# Create your views here.
+
